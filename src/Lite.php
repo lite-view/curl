@@ -23,9 +23,40 @@ class Lite
         curl_setopt($this->cURL, CURLOPT_SSL_VERIFYHOST, false);
     }
 
+    private function exec($url, $timeout)
+    {
+        curl_setopt($this->cURL, CURLOPT_HTTPHEADER, $this->headers);
+        curl_setopt($this->cURL, CURLOPT_URL, $url);
+        curl_setopt($this->cURL, CURLOPT_TIMEOUT, $timeout);
+        $response = curl_exec($this->cURL);//响应信息
+        $error = curl_error($this->cURL);//错误信息
+        $this->info = curl_getinfo($this->cURL);//响应头，请求头等信息
+        curl_close($this->cURL);
+        if ($error) {
+            trigger_error("Lite exec failed, errorMsg:$error;errorCode:" . curl_errno($this->cURL));
+        }
+        return $response;
+    }
+
     public static function request($headers = [])
     {
         return new self($headers);
+    }
+
+    public function get($url, $timeout = 12, &$info = null)
+    {
+        $rsp = $this->exec($url, $timeout);
+        $info = $this->info;
+        return $rsp;
+    }
+
+    public function post($url, $payload, $timeout = 12, &$info = null)
+    {
+        curl_setopt($this->cURL, CURLOPT_POST, true);
+        curl_setopt($this->cURL, CURLOPT_POSTFIELDS, $payload);
+        $rsp = $this->exec($url, $timeout);
+        $info = $this->info;
+        return $rsp;
     }
 
     public function setHeader($header)
@@ -58,36 +89,5 @@ class Lite
         curl_setopt($this->cURL, CURLINFO_HEADER_OUT, true); //返回请求头信息
         curl_setopt($this->cURL, CURLOPT_HEADER, 1); //返回响应头信息，会和body放在一起
         return $this;
-    }
-
-    private function exec($url, $timeout)
-    {
-        curl_setopt($this->cURL, CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($this->cURL, CURLOPT_URL, $url);
-        curl_setopt($this->cURL, CURLOPT_TIMEOUT, $timeout);
-        $response = curl_exec($this->cURL);//响应信息
-        $error = curl_error($this->cURL);//错误信息
-        $this->info = curl_getinfo($this->cURL);//响应头，请求头等信息
-        curl_close($this->cURL);
-        if ($error) {
-            trigger_error("Lite exec failed, errorMsg:$error;errorCode:" . curl_errno($this->cURL));
-        }
-        return $response;
-    }
-
-    public function get($url, $timeout = 12, &$info = null)
-    {
-        $rsp = $this->exec($url, $timeout);
-        $info = $this->info;
-        return $rsp;
-    }
-
-    public function post($url, $payload, $timeout = 12, &$info = null)
-    {
-        curl_setopt($this->cURL, CURLOPT_POST, true);
-        curl_setopt($this->cURL, CURLOPT_POSTFIELDS, $payload);
-        $rsp = $this->exec($url, $timeout);
-        $info = $this->info;
-        return $rsp;
     }
 }
