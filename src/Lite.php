@@ -31,9 +31,10 @@ class Lite
         $response = curl_exec($this->cURL);//响应信息
         $error = curl_error($this->cURL);//错误信息
         $this->info = curl_getinfo($this->cURL);//响应头，请求头等信息
+        $errCode = curl_errno($this->cURL);
         curl_close($this->cURL);
         if ($error) {
-            trigger_error("Lite exec failed, errorMsg:$error;errorCode:" . curl_errno($this->cURL));
+            trigger_error("Lite exec failed, errorMsg:$error;errorCode:$errCode");
         }
         return $response;
     }
