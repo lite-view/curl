@@ -91,4 +91,10 @@ class Lite
         curl_setopt($this->cURL, CURLOPT_HEADER, 1); //返回响应头信息，会和body放在一起
         return $this;
     }
+
+    public function followLocation()
+    {
+        curl_setopt($this->cURL, CURLOPT_FOLLOWLOCATION, true);
+        return $this;
+    }
 }
