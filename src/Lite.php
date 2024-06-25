@@ -77,6 +77,16 @@ class Lite
         return $this;
     }
 
+    public function setProxy($host, $port, $username = null, $password = null)
+    {
+        curl_setopt($this->cURL, CURLOPT_PROXY, "$host");
+        curl_setopt($this->cURL, CURLOPT_PROXYPORT, "$port");
+        if ($username && $password) {
+            curl_setopt($this->cURL, CURLOPT_PROXYUSERPWD, $username . ':' . $password); // 如果代理需要认证
+        }
+        return $this;
+    }
+
     public function setSSL($cert, $key)
     {
         curl_setopt($this->cURL, CURLOPT_SSLKEYTYPE, 'PEM'); //默认格式为PEM，可以去掉
